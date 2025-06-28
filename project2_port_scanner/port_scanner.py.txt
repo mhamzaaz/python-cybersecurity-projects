@@ -1,0 +1,36 @@
+# port_scanner.py
+
+import socket
+import datetime
+
+def scan_ports(target, ports):
+    print(f"\nStarting scan on: {target}")
+    print(f"Scan time: {datetime.datetime.now()}\n")
+    
+    for port in ports:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(1)  # 1 second timeout
+        result = sock.connect_ex((target, port))
+        if result == 0:
+            print(f"[+] Port {port} is OPEN")
+        sock.close()
+
+def main():
+    target = input("Enter IP address or domain: ")
+    port_choice = input("Scan (1) common ports or (2) custom range? [1/2]: ")
+
+    if port_choice == "1":
+        ports = [21, 22, 23, 25, 53, 80, 110, 139, 143, 443, 445, 3306, 3389]
+    else:
+        start = int(input("Enter start port: "))
+        end = int(input("Enter end port: "))
+        ports = list(range(start, end + 1))
+
+    try:
+        target_ip = socket.gethostbyname(target)
+        scan_ports(target_ip, ports)
+    except socket.gaierror:
+        print("Invalid host. Try again.")
+
+if __name__ == "__main__":
+    main()
